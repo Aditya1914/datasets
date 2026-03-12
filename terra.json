@@ -1,0 +1,229 @@
+{
+    "version": 4,
+    "terraform_version": "1.6.0",
+    "serial": 7,
+    "lineage": "2d2e8c45-b8a0-4c4c-a2aa-12b9a5c1a1d2",
+    "outputs": {
+      "vpc_id": {
+        "value": "vpc-0a12bc34de56f7890",
+        "type": "string"
+      },
+      "web_public_ip": {
+        "value": "3.85.210.11",
+        "type": "string"
+      }
+    },
+    "resources": [
+      {
+        "mode": "managed",
+        "type": "aws_vpc",
+        "name": "main",
+        "instances": [
+          {
+            "attributes": {
+              "id": "vpc-0a12bc34de56f7890",
+              "cidr_block": "10.0.0.0/16",
+              "enable_dns_support": true,
+              "enable_dns_hostnames": true,
+              "tags": {
+                "Name": "main-vpc",
+                "Environment": "dev"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_internet_gateway",
+        "name": "igw",
+        "instances": [
+          {
+            "attributes": {
+              "id": "igw-0123456789",
+              "vpc_id": "vpc-0a12bc34de56f7890",
+              "tags": {
+                "Name": "main-igw"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_subnet",
+        "name": "public_subnet_a",
+        "instances": [
+          {
+            "attributes": {
+              "id": "subnet-04fa32ab56cd78ef1",
+              "vpc_id": "vpc-0a12bc34de56f7890",
+              "cidr_block": "10.0.1.0/24",
+              "availability_zone": "us-east-1a",
+              "map_public_ip_on_launch": true,
+              "tags": {
+                "Name": "public-subnet-a"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_subnet",
+        "name": "private_subnet_a",
+        "instances": [
+          {
+            "attributes": {
+              "id": "subnet-0bbfa32ab56cd78ef",
+              "vpc_id": "vpc-0a12bc34de56f7890",
+              "cidr_block": "10.0.2.0/24",
+              "availability_zone": "us-east-1a",
+              "tags": {
+                "Name": "private-subnet-a"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_route_table",
+        "name": "public_rt",
+        "instances": [
+          {
+            "attributes": {
+              "id": "rtb-123456789",
+              "vpc_id": "vpc-0a12bc34de56f7890",
+              "tags": {
+                "Name": "public-rt"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_route_table_association",
+        "name": "public_assoc",
+        "instances": [
+          {
+            "attributes": {
+              "subnet_id": "subnet-04fa32ab56cd78ef1",
+              "route_table_id": "rtb-123456789"
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_security_group",
+        "name": "web_sg",
+        "instances": [
+          {
+            "attributes": {
+              "id": "sg-09876abcde54321ff",
+              "name": "web-security-group",
+              "description": "Allow HTTP and SSH",
+              "vpc_id": "vpc-0a12bc34de56f7890",
+              "ingress": [
+                {
+                  "from_port": 80,
+                  "to_port": 80,
+                  "protocol": "tcp",
+                  "cidr_blocks": ["0.0.0.0/0"]
+                },
+                {
+                  "from_port": 22,
+                  "to_port": 22,
+                  "protocol": "tcp",
+                  "cidr_blocks": ["0.0.0.0/0"]
+                }
+              ],
+              "tags": {
+                "Name": "web-sg"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_instance",
+        "name": "web_server",
+        "instances": [
+          {
+            "attributes": {
+              "id": "i-0ab123cde456f7890",
+              "instance_type": "t2.micro",
+              "ami": "ami-0c55b159cbfafe1f0",
+              "subnet_id": "subnet-04fa32ab56cd78ef1",
+              "vpc_security_group_ids": [
+                "sg-09876abcde54321ff"
+              ],
+              "private_ip": "10.0.1.15",
+              "tags": {
+                "Name": "web-server"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_ebs_volume",
+        "name": "web_data",
+        "instances": [
+          {
+            "attributes": {
+              "id": "vol-1234abcd5678efgh",
+              "availability_zone": "us-east-1a",
+              "size": 20,
+              "type": "gp2",
+              "tags": {
+                "Name": "web-data-volume"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_eip",
+        "name": "web_eip",
+        "instances": [
+          {
+            "attributes": {
+              "id": "eipalloc-12345",
+              "instance": "i-0ab123cde456f7890",
+              "public_ip": "3.85.210.11"
+            }
+          }
+        ]
+      },
+      {
+        "mode": "managed",
+        "type": "aws_lb",
+        "name": "web_lb",
+        "instances": [
+          {
+            "attributes": {
+              "id": "lb-01abcdef23456789",
+              "name": "web-load-balancer",
+              "internal": false,
+              "load_balancer_type": "application",
+              "subnets": [
+                "subnet-04fa32ab56cd78ef1"
+              ],
+              "security_groups": [
+                "sg-09876abcde54321ff"
+              ],
+              "tags": {
+                "Name": "web-lb"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
